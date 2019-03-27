@@ -48,4 +48,27 @@ def second_download(url):
         print('Download urlerror:', e.reason)
         html = None
     return html
-print(second_download("http://127.0.0.1:8000/places/default/index"))
+print(second_download("http://127.0.0.1:8000/places/default/index2"))
+
+'''
+下载重试版本
+'''
+def three_download(url,num_retries=2):
+    print('Downloading:',url)
+    try:
+        html=urllib.request.urlopen(url).read()
+    except urllib.error.HTTPError as e:
+        '''
+        当网页找不到时，就不重试了，即4**的时候不重试
+        '''
+        print('Download httperror:',e.reason)
+        html=None
+        if num_retries > 0:
+            if hasattr(e, 'code') and 500 <= e.code < 600:
+                # retry 5XX HTTP errors
+                html = three_download(url, num_retries - 1)
+    except urllib.error.URLError as e:
+        print('Download urlerror:', e.reason)
+        html = None
+    return html
+print(three_download("http://127.0.0.1:8000/places/default/index"))
