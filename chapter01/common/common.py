@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import urllib.request
 import urllib.error
+# 用来解决ssl验证
+import ssl
 
 ##这个版本的问题是，当下载的网址有问题的时候，会直接报错
 '''
@@ -71,4 +73,77 @@ def three_download(url,num_retries=2):
         print('Download urlerror:', e.reason)
         html = None
     return html
-print(three_download("http://127.0.0.1:8000/places/default/index"))
+'''
+http://httpstat.us/500  可以返回500错误
+'''
+print(three_download("http://httpstat.us/500"))
+
+
+'''
+下载重试版本
+'''
+def four_download(url,context,num_retries=2):
+    print('Downloading:',url)
+    try:
+        if(context):
+            html = urllib.request.urlopen(url,context=context).read()
+        else:
+            html = urllib.request.urlopen(url).read()
+
+    except urllib.error.HTTPError as e:
+        '''
+        当网页找不到时，就不重试了，即4**的时候不重试
+        '''
+        print('Download httperror:',e.reason)
+        html=None
+        if num_retries > 0:
+            if hasattr(e, 'code') and 500 <= e.code < 600:
+                # retry 5XX HTTP errors
+                html = three_download(url, num_retries - 1)
+    except urllib.error.URLError as e:
+        print('Download urlerror:', e.reason)
+        html = None
+    return html
+
+'''
+http://www.meetup.com
+python3 CERTIFICATE_VERIFY_FAILED错误 certificate verify failed
+下面是两种解决问题的方案
+'''
+# 全局取消证书验证，引入如下：
+ssl._create_default_https_context = ssl._create_unverified_context
+#print(four_download("http://www.meetup.com",""))
+
+#生成证书上下文(unverified 就是不验证https证书)
+#print(four_download("https://www.meetup.com",ssl._create_unverified_context()))
+
+
+'''
+添加headers的版本
+'''
+def five_download(url,context,user_agent='awg',num_retries=2):
+    print('Downloading:',url)
+    try:
+        headers={'User-agent':user_agent}
+        req = urllib.request.Request(url=url,headers=headers)
+        if(context):
+            html = urllib.request.urlopen(req,context=context,).read()
+        else:
+            html = urllib.request.urlopen(req).read()
+
+    except urllib.error.HTTPError as e:
+        '''
+        当网页找不到时，就不重试了，即4**的时候不重试
+        '''
+        print('Download httperror:',e.reason)
+        html=None
+        if num_retries > 0:
+            if hasattr(e, 'code') and 500 <= e.code < 600:
+                # retry 5XX HTTP errors
+                html = three_download(url, num_retries - 1)
+    except urllib.error.URLError as e:
+        print('Download urlerror:', e.reason)
+        html = None
+    return html
+
+print(five_download("https://www.meetup.com",ssl._create_unverified_context()))
