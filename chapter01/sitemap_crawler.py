@@ -22,11 +22,9 @@ Sitemap: http://example.webscraping.com/sitemap.xml
 def crawl_sitemap(url):
     # download the sitemap file
     sitemap = five_download(url,ssl._create_unverified_context())
-    #python3 已经严格区分byte和str了。所以这里需要把byte转成str
-    sitemapStr=sitemap.decode(encoding='utf-8');
 
     # extract the sitemap links
-    links = re.findall('<loc>(.*?)</loc>', sitemapStr)
+    links = re.findall('<loc>(.*?)</loc>', sitemap)
     # download each link
     for link in links:
         html = five_download(link,ssl._create_unverified_context())

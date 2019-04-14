@@ -144,6 +144,7 @@ def five_download(url,context,user_agent='awg',num_retries=2):
     except urllib.error.URLError as e:
         print('Download urlerror:', e.reason)
         html = None
-    return html
+    # python3 已经严格区分byte和str了。所以这里需要把byte转成str
+    return html.decode(encoding='utf-8');
 
 #print(five_download("https://www.meetup.com",ssl._create_unverified_context()))
