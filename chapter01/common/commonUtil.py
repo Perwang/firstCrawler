@@ -50,7 +50,7 @@ def second_download(url):
         print('Download urlerror:', e.reason)
         html = None
     return html
-print(second_download("http://127.0.0.1:8000/places/default/index2"))
+#print(second_download("http://127.0.0.1:8000/places/default/index2"))
 
 '''
 下载重试版本
@@ -76,7 +76,7 @@ def three_download(url,num_retries=2):
 '''
 http://httpstat.us/500  可以返回500错误
 '''
-print(three_download("http://httpstat.us/500"))
+#print(three_download("http://httpstat.us/500"))
 
 
 '''
@@ -146,4 +146,4 @@ def five_download(url,context,user_agent='awg',num_retries=2):
         html = None
     return html
 
-print(five_download("https://www.meetup.com",ssl._create_unverified_context()))
+#print(five_download("https://www.meetup.com",ssl._create_unverified_context()))
