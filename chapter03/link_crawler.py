@@ -58,26 +58,24 @@ def link_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1, 
             print('Blocked by robots.txt:', url)
 
 
-def normalize(seed_url, link):
-    """Normalize this URL by removing hash and adding domain
-    """
-    link, _ = urlparse.urldefrag(link)  # remove hash to avoid duplicates
-    return urlparse.urljoin(seed_url, link)
 
+def normalize(seed_url, link):
+    return urljoin(seed_url, link)
 
 def same_domain(url1, url2):
     """Return True if both URL's belong to same domain
     """
-    return urlparse.urlparse(url1).netloc == urlparse.urlparse(url2).netloc
+    return urlparse(url1).netloc == urlparse(url2).netloc
 
 
 def get_robots(url):
     """Initialize robots parser for this domain
     """
     rp = robotparser.RobotFileParser()
-    rp.set_url(urlparse.urljoin(url, '/robots.txt'))
+    rp.set_url(urljoin(url, '/robots.txt'))
     rp.read()
     return rp
+
 
 
 def get_links(html):
@@ -88,8 +86,7 @@ def get_links(html):
     # list of all links from the webpage
     return webpage_regex.findall(html)
 
-
 if __name__ == '__main__':
-    link_crawler('http://example.webscraping.com', '/(index|view)', delay=0, num_retries=1, user_agent='BadCrawler')
-    link_crawler('http://example.webscraping.com', '/(index|view)', delay=0, num_retries=1, max_depth=1,
-                 user_agent='GoodCrawler')
+    link_crawler('http://example.webscraping.com', '/(places/default/index|places/default/view)', delay=2, num_retries=1, max_depth=2,user_agent='GoodCrawler')
+   #link_crawler('http://example.webscraping.com', '/(index|view)', delay=0, num_retries=1, user_agent='BadCrawler')
+   #link_crawler('http://example.webscraping.com', '/(index|view)', delay=0, num_retries=1, max_depth=1,user_agent='GoodCrawler')

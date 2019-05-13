@@ -68,7 +68,7 @@ class Downloader:
                     return self._get(url, headers, proxy, num_retries - 1, data)
             else:
                 code = None
-        return {'html': html, 'code': code}
+        return {'html': html.decode(encoding="utf-8"), 'code': code}
 
 
 class Throttle:
@@ -82,10 +82,9 @@ class Throttle:
         self.domains = {}
 
     def wait(self, url):
-        """Delay if have accessed this domain recently
-        """
-        domain = urlparse.urlsplit(url).netloc
+        domain = urlparse(url).netloc
         last_accessed = self.domains.get(domain)
+
         if self.delay > 0 and last_accessed is not None:
             sleep_secs = self.delay - (datetime.now() - last_accessed).seconds
             if sleep_secs > 0:
